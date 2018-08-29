@@ -11,9 +11,10 @@ using System;
 namespace GroceryStore.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180829191143_Models")]
+    partial class Models
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,9 +112,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name");
-
-                    b.ToTable("GroceryProduct");
+                    b.ToTable("GroceryProducts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -222,13 +221,6 @@ namespace GroceryStore.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("GroceryStore.Models.GroceryProductsModel", b =>
-                {
-                    b.HasOne("GroceryStore.Models.CategoryModel")
-                        .WithMany("GroceryProduct")
-                        .HasForeignKey("Name");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

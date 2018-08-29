@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<form>
+    <div>
+        <select name="category">
+            @if (string.IsNullOrEmpty(ViewBag.selectedCategory))
+            {
+                <option value="" selected>All Products</option>
+            }
+            else
+            {
+                <option value="">All Products</option>
+            }
+            @foreach (string category in (string[])ViewData["Categories"])
+            {
+                @if (ViewBag.selectedCategory == category)
+                {
+                    <option value="@category" selected>@category</option>
+                }
+                else
+                {
+                    <option value="@category">@category</option>
+                }
+
+            }
+        </select>
+
+        <select name="sort">
+            <option value="price">Price (High to Low)</option>
+            <option value="name">Name</option>
+        </select>
+
+        <p><button class="w3-btn">Sort & Filter</button></p>
+    </div>
+
+</form>
