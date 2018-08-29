@@ -1,4 +1,4 @@
-﻿
+﻿@model IEnumerable<GroceryProductsModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -36,3 +36,34 @@
     </div>
 
 </form>
+
+
+<div class="w3-row">
+    @foreach (var product in Model)
+    {
+        <div class="w3-col l3 s6">
+            <div class="w3-container">
+                <a onclick="document.getElementById('id01').style.display='block'"><img src="@product.ImagePath" alt="@product.Name" style="width:100%"></a>
+                <h5>@product.Name</h5>
+                <p>@product.Description</p>
+                <p>@product.Price</p>
+                <div class="w3-container">
+                    <button asp-controller="GroceryCart" asp-action="Index" class="w3-button w3-black">Add to Cart</button>
+
+                    <div id="id01" class="w3-modal">
+                        <div class="w3-modal-content">
+                            <div class="w3-container">
+                                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                                <p>@product.Name</p>
+                                <p>@product.Price /ea</p>
+                                <img src="@product.ImagePath" alt="@product.Name">
+                                <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-black">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

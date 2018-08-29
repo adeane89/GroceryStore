@@ -21,17 +21,21 @@ namespace GroceryStore.Controllers
             this._userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string category, string search)
+        public async Task<IActionResult> Index(string category)
         {
             if (await _context.GroceryProduct.CountAsync() == 0)
             {
                 List<GroceryProductsModel> Produce = new List<GroceryProductsModel>();
-                Produce.Add(new GroceryProductsModel { Name = "Tomatoe", ImagePath = "", Description = "", Price = 20.99m, DateCreated = DateTime.Now, DateLastModified = DateTime.Now });
+                Produce.Add(new GroceryProductsModel { Name = "Tomato", ImagePath = "./images/tomato.jpg", Description = "", Price = 20.99m, DateCreated = DateTime.Now, DateLastModified = DateTime.Now });
                 _context.Categories.Add(new CategoryModel { Name = "Produce", GroceryProduct = Produce });
 
                 List<GroceryProductsModel> Meat = new List<GroceryProductsModel>();
-                Meat.Add(new GroceryProductsModel { Name = "Ground Beef", ImagePath = "", Description = "", Price = 20.99m, DateCreated = DateTime.Now, DateLastModified = DateTime.Now });
+                Meat.Add(new GroceryProductsModel { Name = "Ground Beef", ImagePath = "./images/tomato.jpg", Description = "", Price = 19.99m, DateCreated = DateTime.Now, DateLastModified = DateTime.Now });
                 _context.Categories.Add(new CategoryModel { Name = "Meat", GroceryProduct = Meat });
+
+                List<GroceryProductsModel> Seafood = new List<GroceryProductsModel>();
+                Seafood.Add(new GroceryProductsModel { Name = "Seafood", ImagePath = "./images/tomato.jpg", Description = "", Price = 18.99m, DateCreated = DateTime.Now, DateLastModified = DateTime.Now });
+                _context.Categories.Add(new CategoryModel { Name = "Seafood", GroceryProduct = Seafood });
 
                 await _context.SaveChangesAsync();
             }
@@ -46,12 +50,77 @@ namespace GroceryStore.Controllers
             {
                 model = await this._context.GroceryProduct.Where(x => x.GroceryCategoryName == category).ToListAsync();
             }
+
             ViewData["Categories"] = await this._context.Categories.Select(x => x.Name).ToArrayAsync();
-            if (!string.IsNullOrEmpty(search))
-            {
-                model = model.Where(x => x.Description.ToLowerInvariant().Contains(search.ToLowerInvariant()) || x.Name.ToLowerInvariant().Contains(search.ToLowerInvariant())).ToList();
-            }
+
+            
             return View(model);
+        }
+
+        public async Task<IActionResult> Details(int? id, int quantity, string category, string name, decimal price)
+        {
+            GroceryProductCart cart = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                cart = await _context.GroceryProductCart.Include(x => x.GroceryCartProducts).FirstOrDefaultAsync(x => x.ApplicationUserID == currentUser.Id);
+                if (cart == null)
+                {
+                    cart = new GroceryProductCart();
+                    cart.ApplicationUserID = currentUser.Id;
+                    cart.DateCreated = DateTime.Now;
+                    cart.DateLastModified = DateTime.Now;
+                    _context.GroceryProductCart.Add(cart);
+                }
+            }
+            else
+            {
+                if (Request.Cookies.ContainsKey("cart_id"))
+                {
+                    int existingCartID = int.Parse(Request.Cookies["cart_id"]);
+                    cart = await _context.GroceryProductCart.Include(x => x.GroceryCartProducts).FirstOrDefaultAsync(x => x.ID == existingCartID);
+                }
+
+                if (cart == null)
+                {
+                    cart = new GroceryProductCart
+                    {
+                        DateCreated = DateTime.Now,
+                        DateLastModified = DateTime.Now
+                    };
+
+                    _context.GroceryProductCart.Add(cart);
+                }
+            }
+
+            GroceryCartProduct product = cart.GroceryCartProducts.FirstOrDefault(x => x.GroceryProductID == id);
+            if (product == null)
+            {
+                product = new GroceryCartProduct
+                {
+                    DateCreated = DateTime.Now,
+                    DateLastModified = DateTime.Now,
+                    GroceryProductID = id ?? 0,
+                    Quantity = 0
+                };
+
+                cart.GroceryCartProducts.Add(product);
+            }
+            product.Quantity += quantity;
+            product.DateLastModified = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                Response.Cookies.Append("cart_id", cart.ID.ToString(), new Microsoft.AspNetCore.Http.CookieOptions
+                {
+                    Expires = DateTime.Now.AddYears(1)
+                });
+            }
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Produce()

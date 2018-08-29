@@ -11,9 +11,10 @@ using System;
 namespace GroceryStore.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180829233454_UpdatedModelsCartProducts")]
+    partial class UpdatedModelsCartProducts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,9 +102,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.Property<int?>("GroceryProductCartID");
 
-                    b.Property<int>("GroceryProductID");
-
-                    b.Property<int?>("GroceryProductsID");
+                    b.Property<int>("GroceryProductsModelID");
 
                     b.Property<int?>("Quantity");
 
@@ -111,7 +110,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.HasIndex("GroceryProductCartID");
 
-                    b.HasIndex("GroceryProductsID");
+                    b.HasIndex("GroceryProductsModelID");
 
                     b.ToTable("GroceryCartProducts");
                 });
@@ -280,7 +279,8 @@ namespace GroceryStore.Data.Migrations
 
                     b.HasOne("GroceryStore.Models.GroceryProductsModel", "GroceryProducts")
                         .WithMany()
-                        .HasForeignKey("GroceryProductsID");
+                        .HasForeignKey("GroceryProductsModelID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GroceryStore.Models.GroceryProductCart", b =>

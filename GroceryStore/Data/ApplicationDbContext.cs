@@ -12,6 +12,9 @@ namespace GroceryStore.Data
     {
         public DbSet<GroceryProductsModel> GroceryProduct { get; set; }
         public DbSet<CategoryModel> Categories { get; set; }
+        public DbSet<GroceryProductCart> GroceryProductCart { get; set; }
+        public DbSet<GroceryCartProduct> GroceryCartProducts { get; set; }
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

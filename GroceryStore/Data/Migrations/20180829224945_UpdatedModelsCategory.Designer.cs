@@ -11,9 +11,10 @@ using System;
 namespace GroceryStore.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180829224945_UpdatedModelsCategory")]
+    partial class UpdatedModelsCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,15 +96,9 @@ namespace GroceryStore.Data.Migrations
                     b.Property<int>("GroceryCartProductID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime?>("DateCreated");
-
-                    b.Property<DateTime?>("DateLastModified");
-
                     b.Property<int?>("GroceryProductCartID");
 
-                    b.Property<int>("GroceryProductID");
-
-                    b.Property<int?>("GroceryProductsID");
+                    b.Property<int>("GroceryProductsModelID");
 
                     b.Property<int?>("Quantity");
 
@@ -111,7 +106,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.HasIndex("GroceryProductCartID");
 
-                    b.HasIndex("GroceryProductsID");
+                    b.HasIndex("GroceryProductsModelID");
 
                     b.ToTable("GroceryCartProducts");
                 });
@@ -121,19 +116,7 @@ namespace GroceryStore.Data.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApplicationUserID");
-
-                    b.Property<DateTime?>("DateCreated");
-
-                    b.Property<DateTime?>("DateLastModified");
-
-                    b.Property<int?>("GroceryProductsID");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("ApplicationUserID");
-
-                    b.HasIndex("GroceryProductsID");
 
                     b.ToTable("GroceryProductCart");
                 });
@@ -151,6 +134,8 @@ namespace GroceryStore.Data.Migrations
 
                     b.Property<string>("GroceryCategoryName");
 
+                    b.Property<int?>("GroceryProductCartID");
+
                     b.Property<string>("ImagePath");
 
                     b.Property<string>("Name");
@@ -158,6 +143,8 @@ namespace GroceryStore.Data.Migrations
                     b.Property<decimal>("Price");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("GroceryProductCartID");
 
                     b.HasIndex("Name");
 
@@ -275,27 +262,21 @@ namespace GroceryStore.Data.Migrations
             modelBuilder.Entity("GroceryStore.Models.GroceryCartProduct", b =>
                 {
                     b.HasOne("GroceryStore.Models.GroceryProductCart", "GroceryProductCart")
-                        .WithMany("GroceryCartProducts")
+                        .WithMany()
                         .HasForeignKey("GroceryProductCartID");
 
                     b.HasOne("GroceryStore.Models.GroceryProductsModel", "GroceryProducts")
                         .WithMany()
-                        .HasForeignKey("GroceryProductsID");
-                });
-
-            modelBuilder.Entity("GroceryStore.Models.GroceryProductCart", b =>
-                {
-                    b.HasOne("GroceryStore.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserID");
-
-                    b.HasOne("GroceryStore.Models.GroceryProductsModel", "GroceryProducts")
-                        .WithMany()
-                        .HasForeignKey("GroceryProductsID");
+                        .HasForeignKey("GroceryProductsModelID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GroceryStore.Models.GroceryProductsModel", b =>
                 {
+                    b.HasOne("GroceryStore.Models.GroceryProductCart")
+                        .WithMany("GroceryProducts")
+                        .HasForeignKey("GroceryProductCartID");
+
                     b.HasOne("GroceryStore.Models.CategoryModel")
                         .WithMany("GroceryProduct")
                         .HasForeignKey("Name");
