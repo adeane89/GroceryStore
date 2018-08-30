@@ -11,9 +11,10 @@ using System;
 namespace GroceryStore.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180830004323_AddingName")]
+    partial class AddingName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,8 +35,6 @@ namespace GroceryStore.Data.Migrations
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
-
-                    b.Property<int>("GroceryProductCartID");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -94,14 +93,12 @@ namespace GroceryStore.Data.Migrations
 
             modelBuilder.Entity("GroceryStore.Models.GroceryCartProduct", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("GroceryCartProductID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("DateCreated");
 
                     b.Property<DateTime?>("DateLastModified");
-
-                    b.Property<int>("GroceryCartProductID");
 
                     b.Property<int?>("GroceryProductCartID");
 
@@ -115,7 +112,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.Property<int?>("Quantity");
 
-                    b.HasKey("ID");
+                    b.HasKey("GroceryCartProductID");
 
                     b.HasIndex("GroceryProductCartID");
 
@@ -139,9 +136,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ApplicationUserID")
-                        .IsUnique()
-                        .HasFilter("[ApplicationUserID] IS NOT NULL");
+                    b.HasIndex("ApplicationUserID");
 
                     b.HasIndex("GroceryProductsID");
 
@@ -289,15 +284,15 @@ namespace GroceryStore.Data.Migrations
                         .HasForeignKey("GroceryProductCartID");
 
                     b.HasOne("GroceryStore.Models.GroceryProductsModel", "GroceryProducts")
-                        .WithMany("GroceryCartProducts")
+                        .WithMany()
                         .HasForeignKey("GroceryProductsID");
                 });
 
             modelBuilder.Entity("GroceryStore.Models.GroceryProductCart", b =>
                 {
                     b.HasOne("GroceryStore.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne("GroceryProductCart")
-                        .HasForeignKey("GroceryStore.Models.GroceryProductCart", "ApplicationUserID");
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserID");
 
                     b.HasOne("GroceryStore.Models.GroceryProductsModel", "GroceryProducts")
                         .WithMany()
@@ -306,7 +301,7 @@ namespace GroceryStore.Data.Migrations
 
             modelBuilder.Entity("GroceryStore.Models.GroceryProductsModel", b =>
                 {
-                    b.HasOne("GroceryStore.Models.CategoryModel", "Category")
+                    b.HasOne("GroceryStore.Models.CategoryModel")
                         .WithMany("GroceryProduct")
                         .HasForeignKey("Name");
                 });

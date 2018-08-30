@@ -57,6 +57,13 @@ namespace GroceryStore.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            GroceryProductsModel model = await _context.GroceryProduct.FindAsync(id);
+            return View(model);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Details(int? id, int quantity, string category, string name, decimal price)
         {
             GroceryProductCart cart = null;
@@ -101,7 +108,9 @@ namespace GroceryStore.Controllers
                     DateCreated = DateTime.Now,
                     DateLastModified = DateTime.Now,
                     GroceryProductID = id ?? 0,
-                    Quantity = 0
+                    Quantity = 0,
+                    Name = name,
+                    Price = price
                 };
 
                 cart.GroceryCartProducts.Add(product);
@@ -120,7 +129,7 @@ namespace GroceryStore.Controllers
                 });
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "GroceryCart");
         }
 
         public IActionResult Produce()

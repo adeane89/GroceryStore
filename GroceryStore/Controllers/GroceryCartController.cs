@@ -7,22 +7,44 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GroceryStore.Data;
 using GroceryStore.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GroceryStore.Controllers
 {
     public class GroceryCartController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<ApplicationUser> _userManager;
 
-        public GroceryCartController(ApplicationDbContext context)
+        public GroceryCartController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: GroceryCart
         public async Task<IActionResult> Index()
         {
-            return View(await _context.GroceryProductCart.ToListAsync());
+            GroceryProductCart model = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUser = _userManager.GetUserAsync(User).Result;
+                model = await _context.GroceryProductCart.Include(x => x.GroceryCartProducts).ThenInclude(x => x.GroceryProducts).FirstOrDefaultAsync(x => x.ApplicationUserID == currentUser.Id);
+            }
+
+            else if (Request.Cookies.ContainsKey("cart_id"))
+            {
+                int existingCartID = int.Parse(Request.Cookies["cart_id"]);
+                model = await _context.GroceryProductCart.Include(x => x.GroceryCartProducts).ThenInclude(x => x.GroceryProducts).FirstOrDefaultAsync(x => x.ID == existingCartID);
+
+            }
+
+            else
+            {
+                model = new GroceryProductCart();
+            }
+
+            return View(model);
         }
 
         // GET: GroceryCart/Details/5

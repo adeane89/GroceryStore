@@ -33,6 +33,8 @@ namespace GroceryStore.Data
             builder.Entity<CategoryModel>().Property(x => x.DateCreated).HasDefaultValueSql("GetDate()");
             builder.Entity<CategoryModel>().Property(x => x.DateLastModified).HasDefaultValueSql("GetDate()");
             builder.Entity<CategoryModel>().Property(x => x.Name).HasMaxLength(100);
+
+            builder.Entity<ApplicationUser>().HasOne(x => x.GroceryProductCart).WithOne(x => x.ApplicationUser).HasForeignKey<GroceryProductCart>(x => x.ApplicationUserID);
         }
     }
 }

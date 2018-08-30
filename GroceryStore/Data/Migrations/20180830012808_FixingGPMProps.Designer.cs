@@ -11,9 +11,10 @@ using System;
 namespace GroceryStore.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180830012808_FixingGPMProps")]
+    partial class FixingGPMProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,14 +95,12 @@ namespace GroceryStore.Data.Migrations
 
             modelBuilder.Entity("GroceryStore.Models.GroceryCartProduct", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("GroceryCartProductID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("DateCreated");
 
                     b.Property<DateTime?>("DateLastModified");
-
-                    b.Property<int>("GroceryCartProductID");
 
                     b.Property<int?>("GroceryProductCartID");
 
@@ -115,7 +114,7 @@ namespace GroceryStore.Data.Migrations
 
                     b.Property<int?>("Quantity");
 
-                    b.HasKey("ID");
+                    b.HasKey("GroceryCartProductID");
 
                     b.HasIndex("GroceryProductCartID");
 
